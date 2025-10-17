@@ -10,6 +10,8 @@ Su propósito es practicar y aprender desarrollo web mediante la creación de un
 - [Descripción](#descripción)
 - [Características principales](#características-principales)
 - [Tecnologías utilizadas](#tecnologías-utilizadas)
+- [Estructura base del JavaScript](#estructura-base-del-javascript)
+- [Renderizado de las secciones](#renderizado-de-las-secciones)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Versiones y ramas](#versiones-y-ramas)
 - [Capturas o demo](#capturas-o-demo)
@@ -49,6 +51,99 @@ Este proyecto fue desarrollado con fines educativos como parte del aprendizaje e
 - *(Opcional)* Librerías o frameworks si se agregan más adelante (ej. Bootstrap, React, etc.)
 
 ---
+## 📁 Estructura base del JavaScript
+```// API de TVmaze
+const API = "https://api.tvmaze.com";
+
+// Elementos del DOM
+const rowsContainer = document.getElementById("rowsContainer");
+const hero = document.getElementById("hero");
+const heroTitle = document.getElementById("heroTitle");
+const heroDesc = document.getElementById("heroDesc");
+
+// Inicialización
+const init = async () => {
+  try {
+    const shows = await getShowsByCategory("popular");
+    renderRows(shows);
+    renderHero(shows[0]);
+  } catch (error) {
+    console.error("Error inicializando la app:", error);
+  }
+};
+init();
+```
+🔹 Explicación:
+
+Se define la constante API con la URL base de TVmaze.
+
+Se obtienen los elementos principales del DOM.
+
+La función init() ejecuta la carga inicial: obtiene datos, crea secciones de películas y muestra una imagen destacada (hero).
+---
+## 🎞️ Renderizado de las secciones
+```
+function renderRows(shows) {
+  rowsContainer.innerHTML = "";
+
+  shows.forEach(show => {
+    const item = document.createElement("div");
+    item.classList.add("movie-item");
+    item.innerHTML = `
+      <img src="${show.image?.medium}" alt="${show.name}">
+      <h4>${show.name}</h4>
+    `;
+    item.addEventListener("click", () => openModal(show));
+    rowsContainer.appendChild(item);
+  });
+}
+```
+🔹 Explicación:
+
+Se limpia el contenedor de secciones (rowsContainer).
+
+Por cada elemento (película o serie) recibido de la API:
+
+Se crea un bloque con imagen y título.
+
+Se asigna un evento click para abrir el modal con los detalles del show.
+---
+## 📦 Obtención de datos desde la API
+```
+async function getShowsByCategory(category) {
+  const response = await fetch(`${API}/shows`);
+  const data = await response.json();
+  return data.slice(0, 20); // limitar resultados para rendimiento
+}
+```
+🔹 Explicación:
+
+Usa Fetch API para obtener datos dinámicos desde TVmaze.
+
+Convierte la respuesta a JSON.
+
+Retorna un número limitado de resultados (por ejemplo, 20).
+---
+### 🪟 Modales con detalles
+```
+function openModal(show) {
+  const modal = document.getElementById("modal");
+  const modalContent = document.getElementById("modalContent");
+
+  modalContent.innerHTML = `
+    <h2>${show.name}</h2>
+    <img src="${show.image?.original}" alt="${show.name}">
+    <p>${show.summary || "Sin descripción disponible."}</p>
+  `;
+
+  modal.classList.add("active");
+}
+
+document.getElementById("modalClose").addEventListener("click", () => {
+  document.getElementById("modal").classList.remove("active");
+});
+```
+---
 
 ## 🧩 Estructura del repositorio
 
@@ -77,7 +172,7 @@ Actualmente, el proyecto cuenta con dos ramas principales disponibles en GitHub:
 ---
 ## 📸 Capturas o demo
  
- (Proximamente 🚧)
+ ![alt text](image.png)
 
 ---
 ## 💬 Contacto
